@@ -18,6 +18,7 @@ export function NewsForm(props){
   let textInput = null;
   let hashTagsInput = [];
 
+  const { onAddNewsItem } = props;
   const [titleError, setTitleError] = useState(false);
   const [textError, setTextError] = useState(false);
   const [hashTagsError, setHashTagsError] = useState(false);
@@ -28,8 +29,8 @@ export function NewsForm(props){
     let title = titleInput.value;
     let shortDescription = shortDescriptionInput.value;
     let text = textInput.value;
-    let photo = faker.image.imageUrl()+faker.random.number({ min: 0, max: 10 });
-    let author = AUTHORS[faker.random.number({ min: 0, max: AUTHORS.length - 1 })];
+    let photo = faker.image.imageUrl()+faker.datatype.number({ min: 0, max: 10 });
+    let author = AUTHORS[faker.datatype.number({ min: 0, max: AUTHORS.length - 1 })];
     let rowHashTags = hashTagsInput.map((e, i)=>{return e.checked&&HASHTAGS[i].value});
     let hashTags=[];
     
@@ -51,50 +52,49 @@ export function NewsForm(props){
       hashTags
     };
     
-    if(title && text && hashTags ){props.onAddNewsItem({news})};
+    if(title && text && hashTags){onAddNewsItem({news})};
   };
 
-    return (
-      <div>
-        <form onSubmit={handleSubmit}>
-            <div>Title:
-              <input 
-                ref={(node) => titleInput = node}
-                type="text" 
-                name="title">
-              </input>
-            </div>
-              {titleError && (<span style={{ color: 'red' }}>{ERRORS.title}</span>)}
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div>Title:
+          <input 
+            ref = {(node) => titleInput = node}
+            type = "text" 
+            name = "title">
+          </input>
+        </div>
+        {titleError && (<span style={{ color: 'red' }}>{ERRORS.title}</span>)}
 
-            <div>Short Description:<textarea 
-              ref={(node) => shortDescriptionInput = node}
-              name="shortDescription"/>
-            </div>
+        <div>Short Description:<textarea 
+          ref={(node) => shortDescriptionInput = node}
+          name="shortDescription"/>
+        </div>
 
-            <div>Text:<textarea 
-              ref={(node) => textInput = node}
-              name="text"/>
-            </div>
-            {textError && (<span style={{ color: 'red' }}>{ERRORS['text']}</span>)}
-            
-            <div>
-                <span>HashTags:</span>
-                {HASHTAGS.map((e, i) => (
-                    <label key={e.value}>
-                    <input
-                        type="checkbox"
-                        ref={(node) => hashTagsInput[i] = node}
-                    /><span>{e.label}</span>
-                    </label>
-                ))}
-            </div>
-            {hashTagsError && (<span style={{ color: 'red' }}>{ERRORS['hashTags']}</span>)}
+        <div>Text:<textarea 
+          ref={(node) => textInput = node}
+          name="text"/>
+        </div>
+        {textError && (<span style={{ color: 'red' }}>{ERRORS['text']}</span>)}
+        
+        <div>
+          <span>HashTags:</span>
+          {HASHTAGS.map((e, i) => (
+            <label key={e.value}>
+            <input
+              type="checkbox"
+              ref={(node) => hashTagsInput[i] = node}
+            /><span>{e.label}</span>
+            </label>
+          ))}
+        </div>
+        {hashTagsError && (<span style={{ color: 'red' }}>{ERRORS['hashTags']}</span>)}
           
-            <button type="submit">Create news</button>
-        </form>
-      </div>
-    );
-  
+        <button type="submit">Create news</button>
+      </form>
+    </div>
+  );  
 }
 
 NewsForm.propTypes = {
