@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import faker from 'faker';
 import { HASHTAGS, AUTHORS } from "../data";
@@ -13,10 +13,10 @@ const ERRORS = {
 
 export function NewsForm(props){
   
-  let titleInput = null;
-  let shortDescriptionInput = null;
-  let textInput = null;
-  let hashTagsInput = [];
+  let titleInput = useRef(null);
+  let shortDescriptionInput = useRef(null);
+  let textInput = useRef(null);
+  let hashTagsInput = useRef([]);
 
   const { onAddNewsItem } = props;
   const [titleError, setTitleError] = useState(false);
