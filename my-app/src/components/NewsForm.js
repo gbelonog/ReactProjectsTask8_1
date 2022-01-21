@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import faker from 'faker';
 import { HASHTAGS, AUTHORS } from "../data";
+import { getBase64 } from "./utils";
 
 const ERRORS = {
   title: "Title cannot be empty.",
@@ -17,23 +18,30 @@ export function NewsForm(props){
   let shortDescriptionInput = useRef(null);
   let textInput = useRef(null);
   let hashTagsInput = useRef([]);
+  let photoInput = useRef(null);
+  let authorInput = useRef(null);
 
   const { onAddNewsItem } = props;
   const [titleError, setTitleError] = useState(false);
   const [textError, setTextError] = useState(false);
   const [hashTagsError, setHashTagsError] = useState(false);
 
-  function handleSubmit(e){
+  async function handleSubmit(e){
     e.preventDefault();
     const id = faker.datatype.uuid();
-    let title = titleInput.value;
-    let shortDescription = shortDescriptionInput.value;
-    let text = textInput.value;
-    let photo = faker.image.imageUrl()+faker.datatype.number({ min: 0, max: 10 });
-    let author = AUTHORS[faker.datatype.number({ min: 0, max: AUTHORS.length - 1 })];
-    let rowHashTags = hashTagsInput.map((e, i)=>{return e.checked&&HASHTAGS[i].value});
+    let title = titleInput.current?.value;
+    let shortDescription = shortDescriptionInput.current?.value;
+    let text = textInput.current?.value;
+    let photo = await getBase64(photoInput.current?.files[0], (base64 => { return base64 }));
+    //let photo = faker.image.imageUrl()+faker.datatype.number({ min: 0, max: 10 });
+    let author = authorInput.current?.value;
+        
+    console.log('authorInput.current',authorInput);
+   
+    //let author = AUTHORS[faker.datatype.number({ min: 0, max: AUTHORS.length - 1 })];
+    let rowHashTags = hashTagsInput.current?.map((e, i)=>{return e.checked&&HASHTAGS[i].value});
     let hashTags=[];
-    
+
     for(let i=0; i<rowHashTags.length; i++){
       if(rowHashTags[i]){hashTags.push(rowHashTags[i])}
     }
@@ -60,7 +68,7 @@ export function NewsForm(props){
       <form onSubmit={handleSubmit}>
         <div>Title:
           <input 
-            ref = {(node) => titleInput = node}
+            ref = {titleInput}
             type = "text" 
             name = "title">
           </input>
@@ -68,12 +76,12 @@ export function NewsForm(props){
         {titleError && (<span style={{ color: 'red' }}>{ERRORS.title}</span>)}
 
         <div>Short Description:<textarea 
-          ref={(node) => shortDescriptionInput = node}
+          ref={shortDescriptionInput}
           name="shortDescription"/>
         </div>
 
         <div>Text:<textarea 
-          ref={(node) => textInput = node}
+          ref={textInput}
           name="text"/>
         </div>
         {textError && (<span style={{ color: 'red' }}>{ERRORS['text']}</span>)}
@@ -84,13 +92,41 @@ export function NewsForm(props){
             <label key={e.value}>
             <input
               type="checkbox"
-              ref={(node) => hashTagsInput[i] = node}
+              ref={e => hashTagsInput.current[i] = e}
             /><span>{e.label}</span>
             </label>
           ))}
         </div>
         {hashTagsError && (<span style={{ color: 'red' }}>{ERRORS['hashTags']}</span>)}
           
+        <div>Photo:<input 
+          type="file"
+          accept=".jpeg,.png"
+          ref={photoInput}
+          name="photo"/>
+        </div>
+        {/* {textError && (<span style={{ color: 'red' }}>{ERRORS['text']}</span>)} */}
+
+        <div>
+          <span>Author:</span>
+
+
+          {AUTHORS.map((e,i) => (
+            <label key={e+i}>
+            <input
+              key={e+i}
+              type="radio"
+              name="authors"
+              ref={authorInput}
+              defaultChecked
+            /><span>{e}</span>
+            </label>
+          ))}
+        </div>
+        {/* {hashTagsError && (<span style={{ color: 'red' }}>{ERRORS['hashTags']}</span>)} */}
+          
+
+
         <button type="submit">Create news</button>
       </form>
     </div>
