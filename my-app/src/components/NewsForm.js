@@ -28,22 +28,18 @@ export function NewsForm(props){
 
   async function handleSubmit(e){
     e.preventDefault();
+
     const id = faker.datatype.uuid();
+
     let title = titleInput.current?.value;
     let shortDescription = shortDescriptionInput.current?.value;
     let text = textInput.current?.value;
     let photo = await getBase64(photoInput.current?.files[0], (base64 => { return base64 }));
-     let author = '';
+    let author = '';
     for(let i =0; i<4; i++){
       if(authorInput.current.children[i].children[0].checked) author = authorInput.current.children[i].innerText
     }
-
-      // author = authorInput?.current.children.filter( e => {
-      //   if(e.children[0].checked) return e.innerText
-      // })
     
-
-
     let rowHashTags = hashTagsInput.current?.map((e, i)=>{return e.checked&&HASHTAGS[i].value});
     let hashTags=[];
     for(let i=0; i<rowHashTags.length; i++){
