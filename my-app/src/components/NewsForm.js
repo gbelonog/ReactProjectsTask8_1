@@ -8,8 +8,7 @@ const ERRORS = {
   title: "Title cannot be empty.",
   text: "Text cannot be empty.",
   photo: "Photo is not selected.",
-  hashTags: "Hash tags are not selected.",
-  author: "Author is not selected.",
+  hashTags: "Hash tags are not selected."
 }
 
 export function NewsForm(props){
@@ -24,6 +23,7 @@ export function NewsForm(props){
   const { onAddNewsItem } = props;
   const [titleError, setTitleError] = useState(false);
   const [textError, setTextError] = useState(false);
+  const [photoError, setPhotoError] = useState(false);
   const [hashTagsError, setHashTagsError] = useState(false);
 
   async function handleSubmit(e){
@@ -33,21 +33,26 @@ export function NewsForm(props){
     let shortDescription = shortDescriptionInput.current?.value;
     let text = textInput.current?.value;
     let photo = await getBase64(photoInput.current?.files[0], (base64 => { return base64 }));
-    //let photo = faker.image.imageUrl()+faker.datatype.number({ min: 0, max: 10 });
-    let author = authorInput.current?.value;
-        
-    console.log('authorInput.current',authorInput);
-   
-    //let author = AUTHORS[faker.datatype.number({ min: 0, max: AUTHORS.length - 1 })];
+     let author = '';
+    for(let i =0; i<4; i++){
+      if(authorInput.current.children[i].children[0].checked) author = authorInput.current.children[i].innerText
+    }
+
+      // author = authorInput?.current.children.filter( e => {
+      //   if(e.children[0].checked) return e.innerText
+      // })
+    
+
+
     let rowHashTags = hashTagsInput.current?.map((e, i)=>{return e.checked&&HASHTAGS[i].value});
     let hashTags=[];
-
     for(let i=0; i<rowHashTags.length; i++){
       if(rowHashTags[i]){hashTags.push(rowHashTags[i])}
     }
 
     if(!title){setTitleError(true)};
     if(!text){setTextError(true)};
+    if(!photo){setPhotoError(true)};
     if(hashTags.length === 0){setHashTagsError(true)};
 
     const news = {
@@ -105,27 +110,21 @@ export function NewsForm(props){
           ref={photoInput}
           name="photo"/>
         </div>
-        {/* {textError && (<span style={{ color: 'red' }}>{ERRORS['text']}</span>)} */}
-
-        <div>
-          <span>Author:</span>
-
-
+        {photoError && (<span style={{ color: 'red' }}>{ERRORS['photo']}</span>)}
+        
+        <span>Author:</span>
+        <div ref={authorInput}>
           {AUTHORS.map((e,i) => (
-            <label key={e+i}>
+            <label key={e+i }>
             <input
               key={e+i}
               type="radio"
               name="authors"
-              ref={authorInput}
               defaultChecked
             /><span>{e}</span>
             </label>
           ))}
         </div>
-        {/* {hashTagsError && (<span style={{ color: 'red' }}>{ERRORS['hashTags']}</span>)} */}
-          
-
 
         <button type="submit">Create news</button>
       </form>
